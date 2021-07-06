@@ -1,0 +1,19 @@
+---
+- name: Update web servers
+  hosts: all
+  remote_user: root
+  tasks:
+  - name: Copy file with owner and permissions
+    ansible.builtin.copy:
+      src: '{{ item.src }}'
+      dest: '{{ item.dest }}'
+      mode: '0644'
+      group: root
+      owner: root
+    with_items:
+    -   { src: '/etc/letsencrypt/live/bynic.co/fullchain.pem', dest: '/etc/wildcard-bynaric-net.crt' }
+    -   { src: '/etc/letsencrypt/live/bynic.co/privkey.pem', dest: '/etc/wildcard-bynaric-net.key' }
+  - name: Restart service httpd, in all cases
+    ansible.builtin.service:
+      name: httpd
+      state: reloaded
